@@ -99,6 +99,18 @@ with tab1:
             # Kết hợp
             chart = (bar_chart + text).properties(width=500, height=300)
             st.altair_chart(chart, use_container_width=True)
+
+            # 📊 Tính xác suất trung bình theo cảm xúc
+            labels = model.classes_
+            avg_probas = pd.DataFrame(probas, columns=labels)
+            avg_probas["Predicted"] = preds
+            summary = avg_probas.groupby("Predicted").mean().reset_index()
+            summary = summary.rename(columns={"Predicted": "Cảm xúc"})
+            summary = pd.merge(sentiment_counts, summary, on="Cảm xúc")
+            
+            # 📑 Hiển thị bảng tổng hợp
+            st.subheader("📑 Bảng tổng hợp số lượng & xác suất trung bình:")
+            st.dataframe(summary.style.format({label: "{:.2%}" for label in labels}))
             
 
 with tab2:
@@ -155,3 +167,15 @@ with tab2:
             # Kết hợp
             chart = (bar_chart + text).properties(width=500, height=300)
             st.altair_chart(chart, use_container_width=True)
+
+            # 📊 Tính xác suất trung bình theo cảm xúc
+            labels = model.classes_
+            avg_probas = pd.DataFrame(probas, columns=labels)
+            avg_probas["Predicted"] = preds
+            summary = avg_probas.groupby("Predicted").mean().reset_index()
+            summary = summary.rename(columns={"Predicted": "Cảm xúc"})
+            summary = pd.merge(sentiment_counts, summary, on="Cảm xúc")
+            
+            # 📑 Hiển thị bảng tổng hợp
+            st.subheader("📑 Bảng tổng hợp số lượng & xác suất trung bình:")
+            st.dataframe(summary.style.format({label: "{:.2%}" for label in labels}))
