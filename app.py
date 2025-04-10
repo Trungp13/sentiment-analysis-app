@@ -99,10 +99,10 @@ with tab1:
             # Kết hợp
             chart = (bar_chart + text).properties(width=500, height=300)
             st.altair_chart(chart, use_container_width=True)
-            
+
             # 📑 Hiển thị bảng tổng hợp
-            st.subheader("📑 Bảng tổng hợp số lượng & xác suất trung bình:")
-            st.dataframe(summary.style.format({label: "{:.2%}" for label in labels}))
+            st.subheader("📑 Bảng tổng hợp số lượng theo cảm xúc:")
+            st.table(sentiment_counts)
             
 
 with tab2:
@@ -161,5 +161,5 @@ with tab2:
             st.altair_chart(chart, use_container_width=True)
 
             # 📑 Hiển thị bảng tổng hợp
-            st.subheader("📑 Bảng tổng hợp số lượng & xác suất trung bình:")
-            st.dataframe(summary.style.format({label: "{:.2%}" for label in labels}))
+            st.subheader("📑 Bảng tổng hợp số lượng theo cảm xúc:")
+            st.table(sentiment_counts)    
