@@ -3,6 +3,7 @@ import joblib
 import re
 import string
 import pandas as pd
+import altair as alt
 
 # --- Load mô hình ---
 model = joblib.load("model.pkl")
@@ -66,7 +67,28 @@ with tab1:
             st.dataframe(styled_df, use_container_width=True)
 
             st.subheader("📊 Thống kê tổng hợp:")
-            st.bar_chart(df_result["Dự đoán"].value_counts())
+            # Thống kê cảm xúc
+            sentiment_counts = df_result["Dự đoán"].value_counts().reset_index()
+            sentiment_counts.columns = ["Cảm xúc", "Số lượng"]
+
+            # Màu sắc theo cảm xúc
+            color_map = {
+                "positive": "green",
+                "neutral": "gray",
+                "negative": "red"
+            }
+    
+            chart = alt.Chart(sentiment_counts).mark_bar().encode(
+                x=alt.X("Cảm xúc", sort=["positive", "neutral", "negative"]),
+                y="Số lượng",
+                color=alt.Color("Cảm xúc", scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())))
+            ).properties(
+                width=500,
+                height=300
+            )
+
+            st.altair_chart(chart, use_container_width=True)
+            
 
 with tab2:
     uploaded_file = st.file_uploader("📎 Tải file .txt chứa review", type=["txt"])
@@ -90,4 +112,24 @@ with tab2:
             st.dataframe(styled_df, use_container_width=True)
 
             st.subheader("📊 Thống kê tổng hợp:")
-            st.bar_chart(df_result["Dự đoán"].value_counts())
+                        # Thống kê cảm xúc
+            sentiment_counts = df_result["Dự đoán"].value_counts().reset_index()
+            sentiment_counts.columns = ["Cảm xúc", "Số lượng"]
+
+            # Màu sắc theo cảm xúc
+            color_map = {
+                "positive": "green",
+                "neutral": "gray",
+                "negative": "red"
+            }
+    
+            chart = alt.Chart(sentiment_counts).mark_bar().encode(
+                x=alt.X("Cảm xúc", sort=["positive", "neutral", "negative"]),
+                y="Số lượng",
+                color=alt.Color("Cảm xúc", scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())))
+            ).properties(
+                width=500,
+                height=300
+            )
+
+            st.altair_chart(chart, use_container_width=True)
