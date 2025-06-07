@@ -31,8 +31,6 @@ def highlight_sentiment(val):
         color = "green"
     elif val == "negative":
         color = "red"
-    elif val == "neutral":
-        color = "gray"
     return f"color: {color}; font-weight: bold"
 
 # --- Giao diện ---
@@ -44,8 +42,9 @@ tab1, tab2 = st.tabs(["📝 Nhập văn bản", "📁 Tải file .txt"])
 with tab1:
     st.markdown("Nhập **một hoặc nhiều câu**, mỗi câu trên **một dòng riêng**:")
 
-    with st.expander("📌 Xem ví dụ mẫu"):
-        st.code("Phim này quá dở, mình không thể xem nổi.\nTôi rất thích bộ phim này, thật cảm xúc!")
+    with st.expander("📌 View sample input"):
+        st.code("This movie is terrible, I couldn’t even finish it.\nI absolutely loved this film, very emotional!")
+
 
     input_text = st.text_area("✍️ Dán hoặc nhập review tại đây:", height=200)
 
@@ -67,43 +66,35 @@ with tab1:
             st.dataframe(styled_df, use_container_width=True)
 
             st.subheader("📊 Thống kê tổng hợp:")
-            # Thống kê cảm xúc
             sentiment_counts = df_result["Dự đoán"].value_counts().reset_index()
             sentiment_counts.columns = ["Cảm xúc", "Số lượng"]
-            
-            # Màu sắc theo cảm xúc
+
             color_map = {
                 "positive": "green",
-                "neutral": "gray",
                 "negative": "red"
             }
-            
-            # Biểu đồ chính
+
             bar_chart = alt.Chart(sentiment_counts).mark_bar().encode(
-                x=alt.X("Cảm xúc", sort=["positive", "neutral", "negative"]),
+                x=alt.X("Cảm xúc", sort=["positive", "negative"]),
                 y=alt.Y("Số lượng"),
                 color=alt.Color("Cảm xúc", scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())))
             )
-            
-            # Lớp hiển thị số
+
             text = alt.Chart(sentiment_counts).mark_text(
                 align='center',
                 baseline='bottom',
-                dy=-5  # dịch lên trên đầu cột
+                dy=-5
             ).encode(
-                x=alt.X("Cảm xúc", sort=["positive", "neutral", "negative"]),
+                x=alt.X("Cảm xúc", sort=["positive", "negative"]),
                 y=alt.Y("Số lượng"),
                 text="Số lượng"
             )
-            
-            # Kết hợp
+
             chart = (bar_chart + text).properties(width=500, height=300)
             st.altair_chart(chart, use_container_width=True)
 
-            # 📑 Hiển thị bảng tổng hợp
             st.subheader("📑 Bảng tổng hợp số lượng theo cảm xúc:")
             st.table(sentiment_counts)
-            
 
 with tab2:
     uploaded_file = st.file_uploader("📎 Tải file .txt chứa review", type=["txt"])
@@ -127,39 +118,32 @@ with tab2:
             st.dataframe(styled_df, use_container_width=True)
 
             st.subheader("📊 Thống kê tổng hợp:")
-            # Thống kê cảm xúc
             sentiment_counts = df_result["Dự đoán"].value_counts().reset_index()
             sentiment_counts.columns = ["Cảm xúc", "Số lượng"]
-            
-            # Màu sắc theo cảm xúc
+
             color_map = {
                 "positive": "green",
-                "neutral": "gray",
                 "negative": "red"
             }
-            
-            # Biểu đồ chính
+
             bar_chart = alt.Chart(sentiment_counts).mark_bar().encode(
-                x=alt.X("Cảm xúc", sort=["positive", "neutral", "negative"]),
+                x=alt.X("Cảm xúc", sort=["positive", "negative"]),
                 y=alt.Y("Số lượng"),
                 color=alt.Color("Cảm xúc", scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())))
             )
-            
-            # Lớp hiển thị số
+
             text = alt.Chart(sentiment_counts).mark_text(
                 align='center',
                 baseline='bottom',
-                dy=-5  # dịch lên trên đầu cột
+                dy=-5
             ).encode(
-                x=alt.X("Cảm xúc", sort=["positive", "neutral", "negative"]),
+                x=alt.X("Cảm xúc", sort=["positive", "negative"]),
                 y=alt.Y("Số lượng"),
                 text="Số lượng"
             )
-            
-            # Kết hợp
+
             chart = (bar_chart + text).properties(width=500, height=300)
             st.altair_chart(chart, use_container_width=True)
 
-            # 📑 Hiển thị bảng tổng hợp
             st.subheader("📑 Bảng tổng hợp số lượng theo cảm xúc:")
-            st.table(sentiment_counts)    
+            st.table(sentiment_counts)
