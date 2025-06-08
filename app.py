@@ -5,6 +5,10 @@ import string
 import pandas as pd
 import altair as alt
 import random
+import re
+import string
+from bs4 import BeautifulSoup
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 # --- Load mô hình ---
 model = joblib.load("model.pkl")
@@ -12,10 +16,26 @@ vectorizer = joblib.load("vectorizer.pkl")
 
 # --- Hàm làm sạch văn bản ---
 def clean_text(text):
+    # Loại bỏ HTML tags
+    text = BeautifulSoup(text, "html.parser").get_text()
+    
+    # Loại bỏ URL
+    text = re.sub(r"http\S+|www\S+|https\S+", "", text)
+    
+    # Chuyển thành chữ thường
     text = text.lower()
-    text = re.sub(f"[{string.punctuation}]", "", text)
+    
+    # Loại bỏ dấu câu
+    text = text.translate(str.maketrans("", "", string.punctuation))
+    
+    # Loại bỏ số
     text = re.sub(r"\d+", "", text)
-    return text.strip()
+    
+    # Loại bỏ stopwords
+    tokens = text.split()
+    tokens = [word for word in tokens if word not in ENGLISH_STOP_WORDS]
+    
+    return " ".join(tokens)
 
 # --- Dự đoán nhiều dòng văn bản ---
 def predict_multiple_reviews(reviews):
