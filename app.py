@@ -33,6 +33,9 @@ def highlight_sentiment(val):
         color = "red"
     return f"color: {color}; font-weight: bold"
 
+# Giới hạn dòng xử lý tối đa
+MAX_LINES = 2000
+
 # --- Giao diện ---
 st.set_page_config(page_title="🎬 IMDb Sentiment Analyzer", layout="centered")
 st.title("🎬 Dự đoán cảm xúc review phim (IMDb)")
@@ -44,7 +47,6 @@ with tab1:
 
     with st.expander("📌 View sample input"):
         st.code("This movie is terrible, I couldn’t even finish it.\nI absolutely loved this film, very emotional!")
-
 
     input_text = st.text_area("✍️ Dán hoặc nhập review tại đây:", height=200)
 
@@ -106,7 +108,23 @@ with tab2:
         if len(lines) == 0:
             st.warning("⚠️ File không chứa nội dung hợp lệ.")
         else:
-            preds, probas = predict_multiple_reviews(lines)
+            if len(lines) > MAX_LINES:
+                st.warning(f"⚠️ File quá lớn, chỉ xử lý tối đa {MAX_LINES} dòng đầu tiên.")
+                lines = lines[:MAX_LINES]
+
+            # Hiển thị progress bar khi xử lý
+            progress_bar = st.progress(0)
+            chunk_size = max(1, len(lines) // 10)
+
+            preds = []
+            probas = []
+            for i in range(0, len(lines), chunk_size):
+                chunk = lines[i:i+chunk_size]
+                p, pr = predict_multiple_reviews(chunk)
+                preds.extend(p)
+                probas.extend(pr)
+                progress_bar.progress(min(100, int(((i+chunk_size)/len(lines))*100)))
+
             df_result = pd.DataFrame({
                 "Review": lines,
                 "Dự đoán": preds
