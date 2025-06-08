@@ -1,4 +1,6 @@
 streamlit
-scikit-learn
 pandas
+scikit-learn
 joblib
+beautifulsoup4
+altair
