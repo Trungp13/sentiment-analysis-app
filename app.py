@@ -5,10 +5,9 @@ import string
 import pandas as pd
 import altair as alt
 import random
-import re
-import string
 from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+
 
 # --- Load mô hình ---
 model = joblib.load("model.pkl")
