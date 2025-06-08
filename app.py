@@ -4,6 +4,7 @@ import re
 import string
 import pandas as pd
 import altair as alt
+import random
 
 # --- Load mô hình ---
 model = joblib.load("model.pkl")
@@ -26,15 +27,8 @@ def predict_multiple_reviews(reviews):
 
 # --- Tô màu kết quả ---
 def highlight_sentiment(val):
-    color = ""
-    if val == "positive":
-        color = "green"
-    elif val == "negative":
-        color = "red"
+    color = "green" if val == "positive" else "red"
     return f"color: {color}; font-weight: bold"
-
-# Giới hạn dòng xử lý tối đa
-MAX_LINES = 2000
 
 # --- Giao diện ---
 st.set_page_config(page_title="🎬 IMDb Sentiment Analyzer", layout="centered")
@@ -102,15 +96,20 @@ with tab2:
     uploaded_file = st.file_uploader("📎 Tải file .txt chứa review", type=["txt"])
 
     if uploaded_file is not None:
+        st.markdown("🔢 Chọn số dòng tối đa để phân tích nếu file quá lớn:")
+        max_lines = st.slider("Số dòng tối đa:", min_value=100, max_value=5000, value=2000, step=100)
+
         content = uploaded_file.read().decode("utf-8")
         lines = [line.strip() for line in content.split("\n") if line.strip()]
 
         if len(lines) == 0:
             st.warning("⚠️ File không chứa nội dung hợp lệ.")
         else:
-            if len(lines) > MAX_LINES:
-                st.warning(f"⚠️ File quá lớn, chỉ xử lý tối đa {MAX_LINES} dòng đầu tiên.")
-                lines = lines[:MAX_LINES]
+            if len(lines) > max_lines:
+                st.info(f"📌 File có {len(lines)} dòng, chọn ngẫu nhiên {max_lines} dòng.")
+                lines = random.sample(lines, max_lines)
+            else:
+                st.success(f"✅ File có {len(lines)} dòng, sẽ dùng toàn bộ để phân tích.")
 
             # Hiển thị progress bar khi xử lý
             progress_bar = st.progress(0)
@@ -123,7 +122,8 @@ with tab2:
                 p, pr = predict_multiple_reviews(chunk)
                 preds.extend(p)
                 probas.extend(pr)
-                progress_bar.progress(min(100, int(((i+chunk_size)/len(lines))*100)))
+                progress = min(100, int(((i + chunk_size) / len(lines)) * 100))
+                progress_bar.progress(progress)
 
             df_result = pd.DataFrame({
                 "Review": lines,
@@ -138,11 +138,6 @@ with tab2:
             st.subheader("📊 Thống kê tổng hợp:")
             sentiment_counts = df_result["Dự đoán"].value_counts().reset_index()
             sentiment_counts.columns = ["Cảm xúc", "Số lượng"]
-
-            color_map = {
-                "positive": "green",
-                "negative": "red"
-            }
 
             bar_chart = alt.Chart(sentiment_counts).mark_bar().encode(
                 x=alt.X("Cảm xúc", sort=["positive", "negative"]),
