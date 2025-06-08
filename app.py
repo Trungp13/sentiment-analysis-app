@@ -7,7 +7,7 @@ import altair as alt
 import random
 from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
-
+import html  # bổ sung thư viện html để unescape
 
 # --- Load mô hình ---
 model = joblib.load("model.pkl")
@@ -15,7 +15,10 @@ vectorizer = joblib.load("vectorizer.pkl")
 
 # --- Hàm làm sạch văn bản ---
 def clean_text(text):
-    # Loại bỏ HTML tags
+    # Giải mã các ký tự HTML entities (&lt;, &gt;, &amp; ...)
+    text = html.unescape(text)
+
+    # Loại bỏ HTML tags (bao gồm cả <br/>)
     text = BeautifulSoup(text, "html.parser").get_text()
     
     # Loại bỏ URL
