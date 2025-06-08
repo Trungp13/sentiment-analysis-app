@@ -5,3 +5,4 @@ joblib
 beautifulsoup4
 altair
 lxml
+html5lib
