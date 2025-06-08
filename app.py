@@ -19,7 +19,7 @@ def clean_text(text):
     text = html.unescape(text)
 
     # Loại bỏ HTML tags (bao gồm cả <br/>)
-    text = BeautifulSoup(text, "html.parser").get_text()
+    text = BeautifulSoup(text, "html5lib").get_text()
     
     # Loại bỏ URL
     text = re.sub(r"http\S+|www\S+|https\S+", "", text)
