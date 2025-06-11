@@ -93,6 +93,26 @@ with tab1:
             st.subheader("📑 Bảng tổng hợp:")
             st.table(sentiment_counts)
 
+# 🎯 Đưa ra khuyến nghị dựa trên tỉ lệ đánh giá tích cực
+total_reviews = sentiment_counts["Số lượng"].sum()
+
+if "positive" in sentiment_counts["Cảm xúc"].values:
+    positive_count = sentiment_counts[sentiment_counts["Cảm xúc"] == "positive"]["Số lượng"].values[0]
+else:
+    positive_count = 0
+
+percent_positive = (positive_count / total_reviews) * 100
+
+st.subheader("🎯 Gợi ý xem phim:")
+
+if percent_positive >= 70:
+    st.success(f"✅ {percent_positive:.1f}% đánh giá tích cực → **NÊN XEM!**")
+elif percent_positive <= 30:
+    st.error(f"❌ Chỉ {percent_positive:.1f}% đánh giá tích cực → **KHÔNG NÊN XEM.**")
+else:
+    st.warning(f"🤔 {percent_positive:.1f}% đánh giá tích cực → **Cân nhắc trước khi xem.**")
+
+
 with tab2:
     uploaded_file = st.file_uploader("📎 Tải file .txt chứa review", type=["txt"])
 
@@ -140,3 +160,21 @@ with tab2:
                 st.altair_chart(chart, use_container_width=True)
                 st.subheader("📑 Bảng tổng hợp:")
                 st.table(sentiment_counts)
+# 🎯 Đưa ra khuyến nghị dựa trên tỉ lệ đánh giá tích cực
+total_reviews = sentiment_counts["Số lượng"].sum()
+
+if "positive" in sentiment_counts["Cảm xúc"].values:
+    positive_count = sentiment_counts[sentiment_counts["Cảm xúc"] == "positive"]["Số lượng"].values[0]
+else:
+    positive_count = 0
+
+percent_positive = (positive_count / total_reviews) * 100
+
+st.subheader("🎯 Gợi ý xem phim:")
+
+if percent_positive >= 70:
+    st.success(f"✅ {percent_positive:.1f}% đánh giá tích cực → **NÊN XEM!**")
+elif percent_positive <= 30:
+    st.error(f"❌ Chỉ {percent_positive:.1f}% đánh giá tích cực → **KHÔNG NÊN XEM.**")
+else:
+    st.warning(f"🤔 {percent_positive:.1f}% đánh giá tích cực → **Cân nhắc trước khi xem.**")
